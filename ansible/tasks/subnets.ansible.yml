@@ -1,0 +1,37 @@
+- name: Create master subnet
+  azure.azcollection.azure_rm_subnet:
+    resource_group: "{{ rg }}"
+    virtual_network_name: private-vnet
+    name: master-private-subnet
+    address_prefix_cidr: "{{ vnet.master_subnet_cidr }}"
+    nat_gateway: "{{ 'nat-gw' if nat_gw else omit }}"
+    security_group: AllowFromALL
+    service_endpoints:
+      - service: "Microsoft.Storage"
+        locations:
+          - "{{ location }}"
+
+- name: Create worker subnet
+  azure.azcollection.azure_rm_subnet:
+    resource_group: "{{ rg }}"
+    virtual_network_name: private-vnet
+    name: worker-private-subnet
+    address_prefix_cidr: "{{ vnet.worker_subnet_cidr }}"
+    nat_gateway: "{{ 'nat-gw' if nat_gw else omit }}"
+    security_group: AllowFromALL
+    service_endpoints:
+      - service: "Microsoft.Storage"
+        locations:
+          - "{{ location }}"
+
+- name: Create public subnet
+  azure.azcollection.azure_rm_subnet:
+    resource_group: private-ocp
+    virtual_network_name: private-vnet
+    name: public-subnet
+    address_prefix_cidr: "{{ vnet.public_subnet_cidr }}"
+    security_group: AllowFromALL
+    service_endpoints:
+      - service: "Microsoft.Storage"
+        locations:
+          - "{{ location }}"

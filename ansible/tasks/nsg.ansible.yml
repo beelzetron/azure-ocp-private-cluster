@@ -1,0 +1,36 @@
+- name: Create AllowfromALL NSG
+  azure.azcollection.azure_rm_securitygroup:
+    resource_group: "{{ rg }}"
+    name: AllowFromALL
+    location: "{{ location }}"
+    purge_rules: true
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"
+    rules:
+      - name: AllowFromALL
+        priority: 100
+        access: Allow
+
+- name: Create AllowSSH NSG
+  azure.azcollection.azure_rm_securitygroup:
+    resource_group: "{{ rg }}"
+    name: AllowSSH
+    location: "{{ location }}"
+    purge_rules: true
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"
+    rules:
+      - name: AllowSSH
+        priority: 100
+        access: Allow
+        protocol: Tcp
+        destination_port_range: 22
+        source_address_prefix:
+          - "{{ nsg.allow_ssh_from_cidr }}"
+      - name: AllowFromInternal
+        priority: 101
+        access: Allow
+        source_address_prefix:
+          - "{{ vnet.cidr }}"

@@ -1,0 +1,27 @@
+- name: Allocate Public IP for NAT GW
+  azure.azcollection.azure_rm_publicipaddress:
+    resource_group: "{{ rg }}"
+    name: nat-gw-publicip
+    sku: standard
+    allocation_method: static
+    zones:
+      - 1
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"
+
+- name: Create instance of NAT Gateway
+  azure.azcollection.azure_rm_natgateway:
+    resource_group: "{{ rg }}"
+    name: nat-gw
+    idle_timeout_in_minutes: 10
+    location: "{{ location }}"
+    zones:
+      - 1
+    sku:
+      name: standard
+    public_ip_addresses:
+      - nat-gw-publicip
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"

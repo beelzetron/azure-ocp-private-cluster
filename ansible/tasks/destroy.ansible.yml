@@ -1,0 +1,89 @@
+- name: Destroy Bastion VM
+  azure.azcollection.azure_rm_virtualmachine:
+    resource_group: "{{ rg }}"
+    name: bastion
+    state: absent
+    remove_on_absent: all_autocreated
+
+- name: Destroy Bastion managed disk
+  azure.azcollection.azure_rm_manageddisk:
+    resource_group: "{{ rg }}"
+    name: bastion
+    state: absent
+
+- name: Destroy Bastion NIC
+  azure.azcollection.azure_rm_networkinterface:
+    resource_group: "{{ rg }}"
+    name: bastion-NIC
+    state: absent
+
+- name: Destroy master subnet
+  azure.azcollection.azure_rm_subnet:
+    resource_group: "{{ rg }}"
+    virtual_network_name: private-vnet
+    name: master-private-subnet
+    state: absent
+
+- name: Destroy worker subnet
+  azure.azcollection.azure_rm_subnet:
+    resource_group: "{{ rg }}"
+    virtual_network_name: private-vnet
+    name: worker-private-subnet
+    state: absent
+
+- name: Destroy public subnet
+  azure.azcollection.azure_rm_subnet:
+    resource_group: "{{ rg }}"
+    virtual_network_name: private-vnet
+    name: public-subnet
+    state: absent
+
+- name: Destroy NAT Gateway
+  azure.azcollection.azure_rm_natgateway:
+    resource_group: "{{ rg }}"
+    name: nat-gw
+    location: "{{ location }}"
+    state: absent
+  when: nat_gw
+
+- name: Destroy NAT GW Public IP
+  azure.azcollection.azure_rm_publicipaddress:
+    resource_group: "{{ rg }}"
+    name: nat-gw-publicip
+    sku: standard
+    state: absent
+  when: nat_gw
+
+- name: Destroy bastion Public IP
+  azure.azcollection.azure_rm_publicipaddress:
+    resource_group: "{{ rg }}"
+    name: bastion-publicip
+    sku: standard
+    state: absent
+
+- name: Destroy vnet
+  azure.azcollection.azure_rm_virtualnetwork:
+    name: private-vnet
+    location: "{{ location }}"
+    resource_group: "{{ rg }}"
+    state: absent
+
+- name: Destroy AllowfromALL NSG
+  azure.azcollection.azure_rm_securitygroup:
+    resource_group: "{{ rg }}"
+    name: AllowFromALL
+    location: "{{ location }}"
+    state: absent
+
+- name: Destroy AllowSSH NSG
+  azure.azcollection.azure_rm_securitygroup:
+    resource_group: "{{ rg }}"
+    name: AllowSSH
+    location: "{{ location }}"
+    state: absent
+
+- name: Destroy Azure resource group
+  azure.azcollection.azure_rm_resourcegroup:
+    name: "{{ rg }}"
+    location: "{{ location }}"
+    state: absent

@@ -1,0 +1,18 @@
+- name: Create Azure resource group
+  azure.azcollection.azure_rm_resourcegroup:
+    name: "{{ rg }}"
+    location: "{{ location }}"
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"
+
+- name: Create vnet
+  azure.azcollection.azure_rm_virtualnetwork:
+    name: private-vnet
+    location: "{{ location }}"
+    resource_group: "{{ rg }}"
+    address_prefixes_cidr:
+      - "{{ vnet.cidr }}"
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"

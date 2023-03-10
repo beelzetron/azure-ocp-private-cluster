@@ -1,0 +1,54 @@
+apiVersion: v1
+baseDomain: example.com
+controlPlane:
+  hyperthreading: Enabled
+  name: master
+  platform:
+    azure:
+      osDisk:
+        diskSizeGB: 1024
+        diskType: Premium_LRS
+      type: Standard_D8s_v3
+  replicas: 3
+compute:
+- hyperthreading: Enabled
+  name: worker
+  platform:
+    azure:
+      type: Standard_D2s_v3
+      osDisk:
+        diskSizeGB: 512
+        diskType: Standard_LRS
+      zones:
+      - "1"
+      - "2"
+      - "3"
+  replicas: 3
+metadata:
+  name: private
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineNetwork:
+  - cidr: 10.0.0.0/16
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  azure:
+    region: REGION
+    networkResourceGroupName: RG_NAME
+    virtualNetwork: private-vnet
+    controlPlaneSubnet: master-private-subnet
+    computeSubnet: worker-private-subnet
+    outboundType: UserDefinedRouting
+    cloudName: AzurePublicCloud
+pullSecret: ''
+fips: false
+sshKey: ''
+publish: Internal
+proxy:
+  httpProxy: http://10.0.0.4:3128
+  httpsProxy: http://10.0.0.4:3128
+  noProxy: example.com

@@ -1,0 +1,26 @@
+- name: Setup Azure Subscription for private OCP
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: RG and vNet
+      ansible.builtin.include_tasks:
+        file: tasks/rg_vnet.ansible.yml
+
+    - name: NSGs
+      ansible.builtin.include_tasks:
+        file: tasks/nsg.ansible.yml
+
+    - name: NAT GW
+      ansible.builtin.include_tasks:
+        file: tasks/natgw.ansible.yml
+      when: nat_gw
+
+    - name: Subnets
+      ansible.builtin.include_tasks:
+        file: tasks/subnets.ansible.yml
+
+    - name: Bastion
+      ansible.builtin.include_tasks:
+        file: tasks/bastion.ansible.yml

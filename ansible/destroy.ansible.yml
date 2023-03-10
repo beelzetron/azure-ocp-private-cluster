@@ -1,0 +1,9 @@
+- name: Destroy
+  gather_facts: false
+  hosts: localhost
+  vars_files:
+    - vars.yml
+  tasks:
+    - name: Destroy resources
+      ansible.builtin.include_tasks:
+        file: tasks/destroy.ansible.yml

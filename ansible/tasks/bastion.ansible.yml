@@ -1,0 +1,48 @@
+- name: Allocate Public IP for Bastion
+  azure_rm_publicipaddress:
+    resource_group: "{{ rg }}"
+    allocation_method: static
+    name: bastion-publicip
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"
+  register: bastion_ip_address
+
+- name: Public IP of VM
+  ansible.builtin.debug:
+    msg: "The public IP is {{ bastion_ip_address.state.ip_address }}."
+
+- name: Create virtual network interface card
+  azure.azcollection.azure_rm_networkinterface:
+    resource_group: "{{ rg }}"
+    name: bastion-NIC
+    virtual_network: private-vnet
+    subnet: public-subnet
+    ip_configurations:
+      - name: bastion-publicip-config
+        public_ip_name: bastion-publicip
+    security_group: AllowSSH
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"
+
+- name: Create Bastion VM
+  azure.azcollection.azure_rm_virtualmachine:
+    resource_group: "{{ rg }}"
+    name: bastion
+    vm_size: Standard_DS1_v2
+    admin_username: azureuser
+    ssh_password_enabled: false
+    ssh_public_keys:
+      - path: /home/azureuser/.ssh/authorized_keys
+        key_data: "{{ ssh_key }}"
+    network_interfaces: bastion-NIC
+    managed_disk_type: "Standard_LRS"
+    image:
+      offer: 0001-com-ubuntu-server-focal
+      publisher: Canonical
+      sku: '20_04-lts-gen2'
+      version: latest
+    tags:
+      ansible-managed: "true"
+      project: "private-ocp"

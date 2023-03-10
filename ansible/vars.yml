@@ -1,0 +1,17 @@
+# Azure region to use
+location: westeurope
+# SSH public key for bastion host
+ssh_key: ""
+# Resource Group name
+rg: private-ocp
+# Enable Nat Gateway creation
+nat_gw: true
+# vnet parameters
+vnet:
+  cidr: 10.0.0.0/16
+  master_subnet_cidr: 10.0.1.0/24
+  worker_subnet_cidr: 10.0.2.0/24
+  public_subnet_cidr: 10.0.0.0/24
+# Network security group parameters
+nsg:
+  allow_ssh_from_cidr: 0.0.0.0/0
