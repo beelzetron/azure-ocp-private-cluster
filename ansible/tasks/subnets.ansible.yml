@@ -26,7 +26,7 @@
 
 - name: Create public subnet
   azure.azcollection.azure_rm_subnet:
-    resource_group: private-ocp
+    resource_group: "{{ rg }}"
     virtual_network_name: private-vnet
     name: public-subnet
     address_prefix_cidr: "{{ vnet.public_subnet_cidr }}"
